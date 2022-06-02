@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"
 	"github.com/sirupsen/logrus"
@@ -10,6 +11,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"rlgino/go-prueba-datadog/internal/handler"
 	"rlgino/go-prueba-datadog/internal/logs"
 )
@@ -48,7 +50,8 @@ func main() {
 	http.HandleFunc(handlerV2.GetURI(), handlerV2.Handle)
 
 	log.Println("HTTP Server running")
-	err := http.ListenAndServe(":8080", nil)
+	portNumber := os.Getenv("PORT")
+	err := http.ListenAndServe(fmt.Sprintf(":%s", portNumber), nil)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
