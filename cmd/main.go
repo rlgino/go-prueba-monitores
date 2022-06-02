@@ -2,16 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/opentracing/opentracing-go"
-	"github.com/sirupsen/logrus"
-	otr "gopkg.in/DataDog/dd-trace-go.v1/ddtrace/opentracer"
-	tr "gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
-	"io"
 	"log"
-	"net"
 	"net/http"
 	"os"
+
+	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
+
 	"rlgino/go-prueba-datadog/internal/handler"
 	"rlgino/go-prueba-datadog/internal/logs"
 )
@@ -20,21 +18,13 @@ func main() {
 	logger := logs.NewLogger("http://localhost:3100")
 	// ########## DATADOG ##########
 
-	var tracerCloser io.Closer
-
 	//Override de JAEGER_DISABLED en caso de tracing no habilitado
 	// New
-	ddHost := "127.0.0.1"
-	addr := net.JoinHostPort(ddHost, "8126")
-
-	tracer := otr.New(tr.WithAgentAddr(addr))
-
-	defer tr.Stop()
-
-	opentracing.SetGlobalTracer(tracer)
-	if tracerCloser != nil {
-		defer tracerCloser.Close()
-	}
+	tracer.Start(
+		tracer.WithService("api-golang-dd"),
+		tracer.WithEnv("dev"),
+	)
+	defer tracer.Stop()
 
 	// use JSONFormatter
 	logrus.SetFormatter(&logrus.JSONFormatter{})
