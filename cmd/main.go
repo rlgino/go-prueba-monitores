@@ -15,7 +15,11 @@ import (
 )
 
 func main() {
-	logger := logs.NewLogger("http://localhost:3100")
+	grafanaURL := os.Getenv("GRAFANA_URL")
+	if len(grafanaURL) == 0 {
+		grafanaURL = "http://localhost:3100"
+	}
+	logger := logs.NewLogger(grafanaURL)
 	// ########## DATADOG ##########
 
 	//Override de JAEGER_DISABLED en caso de tracing no habilitado

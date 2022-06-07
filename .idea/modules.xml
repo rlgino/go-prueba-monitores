@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/go-prueba-loki-grafana.iml" filepath="$PROJECT_DIR$/.idea/go-prueba-loki-grafana.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/go-prueba-datadog.iml" filepath="$PROJECT_DIR$/.idea/go-prueba-datadog.iml" />
     </modules>
   </component>
 </project>
