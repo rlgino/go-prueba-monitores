@@ -61,13 +61,13 @@ func (logger *grafanaLogger) Log(info string, level LevelLog) {
 			},
 		},
 	}
-	json_data, err := json.Marshal(bodyMsg)
+	jsonData, err := json.Marshal(bodyMsg)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(string(json_data))
+	fmt.Println(string(jsonData))
 
-	_, err = http.Post(logger.grafanaURL, "application/json", bytes.NewBuffer(json_data))
+	_, err = http.Post(logger.grafanaURL, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		log.Printf("[Error to send to server: %v][%s:%s]\n", err.Error(), level, info)
 	}

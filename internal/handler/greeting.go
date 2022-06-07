@@ -28,11 +28,18 @@ func (handler *GreetingHandler) GetURI() string {
 }
 
 func (handler *GreetingHandler) Handle(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != http.MethodGet {
+		writer.Write([]byte("invalid method: " + request.Method))
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	name := os.Getenv("NAME")
 	if len(name) == 0 {
 		name = "mundo"
 	}
-	responseBody := fmt.Sprintf("Hola %s, estas en el nodo %s", name, handler.uuidGenerated)
+
+	responseBody := fmt.Sprintf("Hola %s, estas en el nodo %s. \n", name, handler.uuidGenerated)
 	_, err := writer.Write([]byte(responseBody))
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
