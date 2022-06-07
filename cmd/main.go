@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	httptrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/net/http"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 
 	"rlgino/go-prueba-datadog/internal/handler"
@@ -34,18 +35,28 @@ func main() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 
 	// log an event as usual with logrus
-	logrus.WithFields(logrus.Fields{"string": "foo", "int": 1, "float": 1.1}).Info("My first event from golang to stdout")
+	logrus.WithFields(logrus.Fields{"instance": "instance-01", "int": 1, "float": 1.1}).Info("My first event from golang to stdout")
 	// ############################
+
+	tracer.Start(
+		tracer.WithService("api-golang-dd"),
+		tracer.WithEnv("dev"),
+	)
+	defer tracer.Stop()
+
+	// Create a traced mux router
+	mux := httptrace.NewServeMux()
 
 	handlerV1 := handler.NewGreetingHandler(logger, uuid.New(), "v1")
 	handlerV2 := handler.NewGreetingHandler(logger, uuid.New(), "v2")
 
-	http.HandleFunc(handlerV1.GetURI(), handlerV1.Handle)
-	http.HandleFunc(handlerV2.GetURI(), handlerV2.Handle)
+	// Continue using the router as you normally would.
+	mux.HandleFunc(handlerV1.GetURI(), handlerV1.Handle)
+	mux.HandleFunc(handlerV2.GetURI(), handlerV2.Handle)
 
 	log.Println("HTTP Server running")
 	portNumber := os.Getenv("PORT")
-	err := http.ListenAndServe(fmt.Sprintf(":%s", portNumber), nil)
+	err := http.ListenAndServe(fmt.Sprintf(":%s", portNumber), mux)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
