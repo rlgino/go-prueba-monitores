@@ -29,8 +29,8 @@ func (handler *GreetingHandler) GetURI() string {
 
 func (handler *GreetingHandler) Handle(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != http.MethodGet {
-		writer.Write([]byte("invalid method: " + request.Method))
 		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte("invalid method: " + request.Method))
 		return
 	}
 
